@@ -7,7 +7,6 @@ public enum CommandNodeType {
     INTEGER,
     LIST,
     PLAYER,
-    REGULATED_STRING,
 
     DEFAULT
 
