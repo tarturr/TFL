@@ -1,9 +1,11 @@
 package fr.tartur.command;
 
-import fr.tartur.duplispot.command.node.IPatternNode;
+import fr.tartur.command.node.IPatternNode;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class CommandPattern {
 
@@ -13,18 +15,22 @@ public class CommandPattern {
         this.pattern = pattern;
     }
 
-    public CommandNode<?> match(CommandContext context) {
+    public CommandPattern() {
+        this(new HashMap<>());
+    }
+
+    public Optional<? extends CommandNode<?>> match(CommandContext context) {
         final IPatternNode<?> pattern = this.pattern.get(context.position());
 
         if (pattern != null) {
-            final var foundNode = pattern.match(context);
+            final var node = pattern.match(context);
 
-            if (foundNode.isPresent()) {
-                return foundNode.get();
+            if (node.isPresent()) {
+                return node;
             }
         }
 
-        return new CommandNode<>(CommandNodeType.DEFAULT, context.argument());
+        return Optional.empty();
     }
 
     public List<String> complete(CommandContext context) {
