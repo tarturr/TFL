@@ -1,8 +1,8 @@
 package fr.tartur.command.node;
 
-import fr.tartur.duplispot.command.CommandContext;
-import fr.tartur.duplispot.command.CommandNode;
-import fr.tartur.duplispot.command.CommandNodeType;
+import fr.tartur.command.CommandContext;
+import fr.tartur.command.CommandNode;
+import fr.tartur.command.CommandNodeType;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,15 +10,19 @@ import java.util.Optional;
 public class ListPatternNode implements IPatternNode<String> {
 
     private final List<String> predefinedValues;
+    private final boolean ignoreCase;
 
-    public ListPatternNode(List<String> predefinedValues) {
+    public ListPatternNode(List<String> predefinedValues, boolean ignoreCase) {
         this.predefinedValues = predefinedValues;
+        this.ignoreCase = ignoreCase;
     }
 
     @Override
     public Optional<CommandNode<String>> match(CommandContext context) {
         return this.predefinedValues.stream()
-                .filter(value -> value.equalsIgnoreCase(context.argument()))
+                .filter(value -> this.ignoreCase
+                        ? value.equalsIgnoreCase(context.argument())
+                        : value.equals(context.argument()))
                 .findFirst()
                 .map(value -> new CommandNode<>(CommandNodeType.DEFAULT, value));
     }

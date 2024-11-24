@@ -1,20 +1,21 @@
 package fr.tartur.command.node;
 
-import fr.tartur.duplispot.command.CommandNodeType;
-
-import java.util.function.Function;
+import fr.tartur.command.CommandNodeType;
 
 public abstract class AbstractNumberPatternNode<T> extends AbstractRegulatedPatternNode<T> {
 
-    protected AbstractNumberPatternNode(CommandNodeType type, Function<String, T> mapper) {
-        super(type, argument -> {
-            try {
-                mapper.apply(argument);
-                return true;
-            } catch (Exception e) {
-                return false;
-            }
-        }, mapper);
+    protected AbstractNumberPatternNode(CommandNodeType type) {
+        super(type);
+    }
+
+    @Override
+    protected boolean match(String argument) {
+        try {
+            this.map(argument);
+            return true;
+        } catch (NumberFormatException exception) {
+            return false;
+        }
     }
 
 }

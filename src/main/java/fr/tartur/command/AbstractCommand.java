@@ -5,15 +5,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
+@Getter
 public abstract class AbstractCommand implements TabExecutor {
 
-    @Getter
     private final String name;
     private final int position;
     private final Set<AbstractCommand> subCommands;
@@ -28,48 +27,62 @@ public abstract class AbstractCommand implements TabExecutor {
         this.pattern = pattern;
     }
 
+    public AbstractCommand(String name, Set<AbstractCommand> subCommands, CommandPattern pattern) {
+        this(name, 0, subCommands, pattern);
+    }
+
+    public AbstractCommand(String name, Set<AbstractCommand> subCommands) {
+        this(name, 0, subCommands, new CommandPattern());
+    }
+
+    public AbstractCommand(String name, CommandPattern pattern) {
+        this(name, 0, new HashSet<>(), pattern);
+    }
+
+    public AbstractCommand(String name) {
+        this(name, 0, new HashSet<>(), new CommandPattern());
+    }
+
     protected abstract boolean run(@NotNull CommandSender sender, CommandStack stack);
 
     @Override
     public final boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        final CommandStack stack = new CommandStack(this);
-
-        if (args.length >= 1) {
-            for (int i = 0; i < args.length; ++i) {
-                final AbstractCommand executor = stack.getExecutor();
-                final CommandNode<?> node = this.pattern.match(new CommandContext(executor, args[i], executor.getRelativeArgumentPosition(i)));
-                stack.add(node);
-            }
-        }
-
+        final CommandStack stack = this.stack;
         this.stack = null;
+
+        // TODO: Maybe implement a CommandPattern#fullMatch(CommandStack stack) to check if the command should be
+        //  executed or if an error message should be sent.
+
         return stack.getExecutor().run(sender, stack);
     }
 
     @Override
-    public final @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public final List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (this.stack == null) {
             this.stack = new CommandStack(this);
         }
 
-        // TODO: Finish the tab complete implementation.
-        return List.of();
-    }
+        final int size = args.length;
 
-    public Optional<AbstractCommand> getSubCommand(String name, int position) {
-        return this.subCommands.stream()
-                .filter(command -> command.name.equalsIgnoreCase(name) && command.position == position)
-                .findFirst();
-    }
+        final AbstractCommand executor = this.stack.getExecutor();
+        final int position = size - 1;
+        final String argument = args[position];
 
-    public List<AbstractCommand> getPartialSubCommands(String argument, int position) {
-        return this.subCommands.stream()
-                .filter(command -> command.name.startsWith(argument) && command.position == position)
-                .toList();
-    }
+        final CommandContext context = new CommandContext(executor, argument, position);
 
-    public int getRelativeArgumentPosition(int position) {
-        return position - 1 - this.position;
+        final var node = executor.pattern.match(context);
+
+        if (node.isPresent()) {
+            if (size == this.stack.size()) {
+                this.stack.pop();
+            }
+
+            this.stack.add(node.get());
+        } else if (size == this.stack.size()) {
+            this.stack.pop();
+        }
+
+        return executor.getPattern().complete(context);
     }
 
 }

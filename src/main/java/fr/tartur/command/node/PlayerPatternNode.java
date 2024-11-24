@@ -1,8 +1,8 @@
 package fr.tartur.command.node;
 
-import fr.tartur.duplispot.command.CommandContext;
-import fr.tartur.duplispot.command.CommandNode;
-import fr.tartur.duplispot.command.CommandNodeType;
+import fr.tartur.command.CommandContext;
+import fr.tartur.command.CommandNode;
+import fr.tartur.command.CommandNodeType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
