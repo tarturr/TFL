@@ -1,7 +1,7 @@
-package fr.tartur.command.node;
+package fr.tartur.tfl.command.node;
 
-import fr.tartur.command.CommandContext;
-import fr.tartur.command.CommandNode;
+import fr.tartur.tfl.command.CommandContext;
+import fr.tartur.tfl.command.CommandNode;
 
 import java.util.List;
 import java.util.Optional;

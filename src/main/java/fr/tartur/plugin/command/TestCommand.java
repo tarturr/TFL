@@ -1,7 +1,7 @@
 package fr.tartur.plugin.command;
 
-import fr.tartur.command.AbstractCommand;
-import fr.tartur.command.CommandStack;
+import fr.tartur.tfl.command.AbstractCommand;
+import fr.tartur.tfl.command.CommandStack;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 

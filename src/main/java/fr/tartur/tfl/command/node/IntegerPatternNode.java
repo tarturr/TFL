@@ -1,6 +1,6 @@
-package fr.tartur.command.node;
+package fr.tartur.tfl.command.node;
 
-import fr.tartur.command.CommandNodeType;
+import fr.tartur.tfl.command.CommandNodeType;
 
 public class IntegerPatternNode extends AbstractNumberPatternNode<Integer> {
 

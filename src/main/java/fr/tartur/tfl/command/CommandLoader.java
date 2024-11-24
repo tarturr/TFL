@@ -1,4 +1,4 @@
-package fr.tartur.command;
+package fr.tartur.tfl.command;
 
 import lombok.Builder;
 import lombok.Singular;

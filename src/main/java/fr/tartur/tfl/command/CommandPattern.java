@@ -1,6 +1,6 @@
-package fr.tartur.command;
+package fr.tartur.tfl.command;
 
-import fr.tartur.command.node.IPatternNode;
+import fr.tartur.tfl.command.node.IPatternNode;
 
 import java.util.HashMap;
 import java.util.List;
