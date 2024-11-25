@@ -18,13 +18,17 @@ public abstract class AbstractCommand implements TabExecutor {
     private final Set<AbstractCommand> subCommands;
     private final CommandPattern pattern;
 
-    private CommandStack stack;
+    private final CommandStack stack;
+    private boolean isValid;
 
     public AbstractCommand(String name, int position, Set<AbstractCommand> subCommands, CommandPattern pattern) {
         this.name = name;
         this.position = position;
         this.subCommands = subCommands;
         this.pattern = pattern;
+
+        this.stack = new CommandStack(this);
+        this.isValid = this.pattern.isEmpty();
     }
 
     public AbstractCommand(String name, Set<AbstractCommand> subCommands, CommandPattern pattern) {
@@ -47,21 +51,19 @@ public abstract class AbstractCommand implements TabExecutor {
 
     @Override
     public final boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        final CommandStack stack = this.stack;
-        this.stack = null;
+        final AbstractCommand executor = this.stack.getExecutor();
 
-        // TODO: Maybe implement a CommandPattern#fullMatch(CommandStack stack) to check if the command should be
-        //  executed or if an error message should be sent.
-
-        return stack.getExecutor().run(sender, stack);
+        if (this.isValid) {
+            final boolean result = executor.run(sender, this.stack);
+            this.stack.clear();
+            return result;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public final List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (this.stack == null) {
-            this.stack = new CommandStack(this);
-        }
-
         final int size = args.length;
 
         final AbstractCommand executor = this.stack.getExecutor();
@@ -78,8 +80,12 @@ public abstract class AbstractCommand implements TabExecutor {
             }
 
             this.stack.add(node.get());
+            this.isValid = true;
         } else if (size == this.stack.size()) {
             this.stack.pop();
+            this.isValid = false;
+        } else if (!argument.isBlank()) {
+            this.isValid = false;
         }
 
         return executor.getPattern().complete(context);
