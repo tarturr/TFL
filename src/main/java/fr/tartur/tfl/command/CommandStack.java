@@ -5,11 +5,17 @@ import java.util.Stack;
 
 public class CommandStack extends Stack<CommandNode<?>> {
 
+    private final AbstractCommand rootCommand;
+
     public CommandStack(AbstractCommand rootCommand) {
-        super.add(new CommandNode<>(CommandNodeType.COMMAND, rootCommand));
+        this.rootCommand = rootCommand;
     }
 
     public AbstractCommand getExecutor() {
+        if (super.isEmpty()) {
+            return this.rootCommand;
+        }
+
         final Stack<CommandNode<?>> temp = new Stack<>();
         AbstractCommand command = null;
 
@@ -24,8 +30,7 @@ public class CommandStack extends Stack<CommandNode<?>> {
         }
 
         if (command == null) {
-            throw new IllegalStateException("Violated the invariant class: CommandStack must always have a command " +
-                    "at its base");
+            command = rootCommand;
         }
 
         while (!temp.isEmpty()) {
