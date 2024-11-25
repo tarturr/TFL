@@ -1,7 +1,8 @@
 package fr.tartur.plugin;
 
-import fr.tartur.tfl.command.CommandLoader;
 import fr.tartur.plugin.command.TestCommand;
+import fr.tartur.tfl.command.CommandLoader;
+import fr.tartur.plugin.command.TestIntCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Core extends JavaPlugin {
@@ -10,6 +11,8 @@ public class Core extends JavaPlugin {
     public void onEnable() {
         CommandLoader.builder()
                 .command(new TestCommand())
+                .command(new TestIntCommand())
+                .plugin(this)
                 .build()
                 .register();
 

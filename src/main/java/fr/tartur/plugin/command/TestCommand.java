@@ -13,7 +13,8 @@ public class TestCommand extends AbstractCommand {
 
     @Override
     protected boolean run(@NotNull CommandSender sender, CommandStack stack) {
-        return false;
+        sender.sendMessage("Test passed!");
+        return true;
     }
 
 }
