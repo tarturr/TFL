@@ -2,6 +2,8 @@ package fr.tartur.tfl.command;
 
 import fr.tartur.tfl.command.node.IPatternNode;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.Singular;
 
 import java.util.HashMap;
@@ -15,8 +17,13 @@ public class CommandPattern {
     @Singular
     private final Map<Integer, IPatternNode<?>> patterns;
 
+    @Getter
+    @Setter
+    private boolean isValid;
+
     public CommandPattern(Map<Integer, IPatternNode<?>> patterns) {
         this.patterns = patterns;
+        this.isValid = this.patterns.isEmpty();
     }
 
     public CommandPattern() {

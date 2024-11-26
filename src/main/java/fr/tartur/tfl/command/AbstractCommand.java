@@ -19,7 +19,6 @@ public abstract class AbstractCommand implements TabExecutor {
     private final CommandPattern pattern;
 
     private final CommandStack stack;
-    private boolean isValid;
 
     public AbstractCommand(String name, int position, Set<AbstractCommand> subCommands, CommandPattern pattern) {
         this.name = name;
@@ -28,7 +27,6 @@ public abstract class AbstractCommand implements TabExecutor {
         this.pattern = pattern;
 
         this.stack = new CommandStack(this);
-        this.isValid = this.pattern.isEmpty();
     }
 
     public AbstractCommand(String name, Set<AbstractCommand> subCommands, CommandPattern pattern) {
@@ -53,7 +51,7 @@ public abstract class AbstractCommand implements TabExecutor {
     public final boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         final AbstractCommand executor = this.stack.getExecutor();
 
-        if (this.isValid) {
+        if (this.pattern.isValid()) {
             final boolean result = executor.run(sender, this.stack);
             this.stack.clear();
             return result;
@@ -80,12 +78,12 @@ public abstract class AbstractCommand implements TabExecutor {
             }
 
             this.stack.add(node.get());
-            this.isValid = true;
+            this.pattern.setValid(true);
         } else if (size == this.stack.size()) {
             this.stack.pop();
-            this.isValid = false;
+            this.pattern.setValid(false);
         } else if (!argument.isBlank()) {
-            this.isValid = false;
+            this.pattern.setValid(false);
         }
 
         return executor.getPattern().complete(context);
