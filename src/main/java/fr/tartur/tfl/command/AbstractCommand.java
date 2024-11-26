@@ -25,6 +25,7 @@ public abstract class AbstractCommand implements TabExecutor {
         this.position = position;
         this.subCommands = subCommands;
         this.pattern = pattern;
+        this.pattern.registerSubCommands(this);
 
         this.stack = new CommandStack(this);
     }

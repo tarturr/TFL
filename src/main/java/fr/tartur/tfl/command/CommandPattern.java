@@ -1,27 +1,24 @@
 package fr.tartur.tfl.command;
 
+import fr.tartur.tfl.command.node.CommandPatternNode;
 import fr.tartur.tfl.command.node.IPatternNode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Singular;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-@Builder
 public class CommandPattern {
 
-    @Singular
     private final Map<Integer, IPatternNode<?>> patterns;
 
     @Getter
     @Setter
     private boolean isValid;
 
-    public CommandPattern(Map<Integer, IPatternNode<?>> patterns) {
+    @Builder
+    public CommandPattern(@Singular Map<Integer, IPatternNode<?>> patterns) {
         this.patterns = patterns;
         this.isValid = this.patterns.isEmpty();
     }
@@ -56,6 +53,10 @@ public class CommandPattern {
 
     public boolean isEmpty() {
         return this.patterns.isEmpty();
+    }
+
+    public void registerSubCommands(AbstractCommand command) {
+        this.patterns.put(command.getPosition(), new CommandPatternNode());
     }
 
 }
